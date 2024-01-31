@@ -39,7 +39,10 @@ def apply_plist_template(plist_file, version):
         print(line.rstrip().replace('${VERSION}', version))
 
 def sign_bundle(binary_name):
-    sh('codesign --force --deep -s - ' + bundle_path(binary_name))
+    for root, _dirs, files in os.walk(target_directory(binary_name)):
+        for f in files:
+            sh('codesign --force -s - ' + os.path.join(root, f))
+    sh('codesign --force -s - ' + bundle_path(binary_name))
 
 def bundle_version():
     if os.path.exists('VERSION'):
